@@ -1,6 +1,8 @@
 set nocompatible
 
 call plug#begin('~/.vim/plugged')
+Plug 'altercation/vim-colors-solarized'
+Plug 'vim-airline/vim-airline'
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'scrooloose/syntastic'
 Plug 'jiangmiao/auto-pairs'
@@ -39,6 +41,14 @@ set undofile
 
 set cmdheight=2
 set shortmess=a
+set so=7
+
+set ignorecase    " Ignore case when searching
+set smartcase	  " Be smart about cases when searching
+set hlsearch
+set incsearch
+
+set showmatch     " Show matching brackets when text indicator is over them
 
 let mapleader = ","
 
@@ -54,31 +64,36 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
-colorscheme peachpuff
+set background=dark
+try
+	let g:solarized_termcolors=256
+	colorscheme solarized
+catch
+endtry
 
-" tasklist
-map <leader>td <Plug>TaskList
+
+set shiftwidth=4
+set tabstop=4
+
+set laststatus=2	" Show statusline 'airline' for only one open file, too.
+
+" Close the current buffer without deleting the split window
+map <leader>bd :Bclose<cr>:tabclose<cr>gT
+" Close all the buffers
+map <leader>ba :bufdo bd<cr>
+
+" Switch cwd to the directory of the open buffer
+map <leader>cd :cd %:p:h<cr>:pwd<cr>
+
 
 " compile
 map <F2> :silent make\|redraw!\|cc<CR>
-
-" debug,
-" call :Pyclewn , :Cfile <executable>, :Cbreak <linenr> , :Crun
-map <F5> :Cnext <CR>
-map <F6> :Cstep <CR>
-map <F7> :Ccontinue <CR>
-
-" syntastic
-" see also
-" http://www.labri.fr/perso/fleury/posts/programming/using-clang-tidy-and-clang-format.html
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
 
 " localvimrc
 let g:localvimrc_persistent = 1 "Store and restore decisions only if anser
 				"was given in upper case (Y/N/A)
 
+" Syntastic
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
@@ -96,3 +111,24 @@ let g:syntastic_cpp_clang_tidy_post_args = ""
 
 :highlight ExtraWhitespace ctermbg=darkgreen guibg=lightgreen
 :match ExtraWhitespace /\s\+$/
+
+" Don't close window, when deleting a buffer
+command! Bclose call <SID>BufcloseCloseIt()
+function! <SID>BufcloseCloseIt()
+	let l:currentBufNum = bufnr("%")
+	let l:alternateBufNum = bufnr("#")
+
+	if buflisted(l:alternateBufNum)
+		buffer #
+	else
+		bnext
+	endif
+
+	if bufnr("%") == l:currentBufNum
+		new
+	endif
+
+	if buflisted(l:currentBufNum)
+		execute("bdelete! ".l:currentBufNum)
+	endif
+endfunction

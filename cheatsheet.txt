@@ -1,0 +1,3 @@
+// Syntastic
+:lclose		" Hides Location (error) list
+:Errors		" Shows Location (error) panel
