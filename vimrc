@@ -66,6 +66,7 @@ nnoremap <C-l> <C-w>l
 
 set background=dark
 try
+	se t_Co=256
 	let g:solarized_termcolors=256
 	colorscheme solarized
 catch
@@ -105,7 +106,8 @@ let g:syntastic_cpp_checkers = ["clang_tidy"]
 let g:syntastic_cpp_clang_tidy_exec = "/usr/bin/clang-tidy-3.9"
 " view syntastic debug messages with :mes
 let g:syntastic_debug = 0
-let g:syntastic_cpp_clang_tidy_post_args = ""
+let g:syntastic_cpp_clang_tidy_args = ["-checks=*"]
+" let g:syntastic_cpp_clang_tidy_post_args = ""
 
 " end syntastic
 
